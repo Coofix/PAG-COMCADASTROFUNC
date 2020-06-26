@@ -2,11 +2,11 @@
 
     include("php/conexao.php");
 
-    if(!isset($_GET['id']))
+    if(!isset($_GET['id_cliente']))
         echo "<script> alert('Codigo invalido.'); location.href='listagem-cliente.php'; </script>";
     else{
 
-        $cliente_id = intval($_GET['id']);
+        $cliente_id = intval($_GET['id_cliente']);
 
         if(isset($_POST['confirmar'])){
 
@@ -65,7 +65,7 @@
                 tel_fixo = '$_SESSION[tel_fixo]',
                 email = '$_SESSION[email]',
                 senha = '$_SESSION[senha]'
-                WHERE id = '$cliente_id'";
+                WHERE id_cliente = '$cliente_id'";
                 
             $confirma = $mysqli ->query($sql_code) or die($mysqli->error);
             
@@ -90,14 +90,14 @@
         } 
 
     }else{
-        $sql_code = "SELECT * FROM CLIENTE WHERE id = '$cliente_id'";
+        $sql_code = "SELECT * FROM CLIENTE WHERE id_cliente = '$cliente_id'";
         $sql_query = $mysqli ->query($sql_code) or die($mysqli->erro);
         $linha = $sql_query->fetch_assoc();
 
         if(!isset($_SESSION))
          session_start();
 
-        $_SESSION[nome_cliente] = $linha['nome_ciente'];
+        $_SESSION[nome_cliente] = $linha['nome_cliente'];
         $_SESSION[data_nascimento] = $linha['data_nascimento'];
         $_SESSION[endereco] =$linha['endereco']; 
         $_SESSION[estado] = $linha['estado'];
@@ -115,7 +115,7 @@
         
 
            
-    }
+    
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -203,7 +203,7 @@
         <div class="page-header">
             <div class="row">
                 <div class="col-sm-6">
-                    <h3>Cadastro Cliente</h3>
+                    <h3>Editar Cliente</h3>
                 </div>
             </div>
         </div>
@@ -224,7 +224,7 @@
 
         ?>
 
-            <form style="margin: 1%;" action="cadastrocliente.php" method="POST">
+            <form style="margin: 1%;" action="editar-cliente.php?id_cliente=<?php echo $cliente_id?>" method="POST">
                 <div class="form-row">
                     <!-- informações sobre cliente start -->
                     <div class="col-md-6 mb-3">
@@ -309,10 +309,11 @@
 
                 <div class="form-row">
                     <div align="right">
-                        <button type="submit" class="btn  btn-primary" name="confirmar" id=>Registrar</button>
+                        <button type="submit" class="btn  btn-primary" name="confirmar" >Registrar</button>
                     </div>
                 </div>
             </form>
+        <?php } ?>    
         </div>
 
 

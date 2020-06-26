@@ -102,7 +102,7 @@
         <div class="page-header">
             <div class="row">
                 <div class="col-sm-6">
-                    <h3>Listagem de Funcionários</h3>
+                    <h3>Listagem de Clientes</h3>
                 </div>
             </div>
         </div>
@@ -148,9 +148,9 @@
         <td><?php echo $linha['email']; ?></td>
         <td><?php echo $linha['senha']; ?></td>
         <td>
-            <a href="editar-cliente.php?id=<?php echo $linha['id']; ?>">Editar </a>
-            <a href="javascript: if(confirm('Tem certeza que deseja deletar o usuário <?php echo $linha['nome_completo']; ?>'))
-            location.href='deletar-cliente.php?id=<?php echo $linha['id']; ?>';">Deletar </a>
+        <a href="editar-cliente.php?id_cliente=<?php echo $linha['id_cliente']; ?>">Editar </a>
+            <a href="javascript: if(confirm('Tem certeza que deseja deletar o cliente <?php echo $linha['nome_cliente']; ?>'))
+            location.href='deletar-cliente.php?id_cliente=<?php echo $linha['id_cliente']; ?>';">Deletar </a>
         </td>
     </tr>
     

@@ -1,3 +1,16 @@
+<?php
+
+    include("php/conexao.php");
+
+        $sql_code = "SELECT * FROM CLIENTE";
+        $sql_query = $mysqli->query($sql_code) or die($mysqli->error);
+        $linha = $sql_query->fetch_assoc();
+
+        
+
+              
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -6,7 +19,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>Gerenciamento</title>
+    <title>Listagem de Funcionários</title>
 
     <!-- Common plugins -->
     <link href="plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -20,12 +33,6 @@
     <!--template css-->
     <link href="css/style.css" rel="stylesheet">
 
-    <style type="text/css">
-        div.card{
-            border:black;
-            border-radius: 20px;
-        }
-    </style>
 
 </head>
 
@@ -95,7 +102,7 @@
         <div class="page-header">
             <div class="row">
                 <div class="col-sm-6">
-                    <h3>Página de gerenciamento</h3>
+                    <h3>Listagem de Funcionários</h3>
                 </div>
             </div>
         </div>
@@ -104,36 +111,54 @@
 
         <!--start page content-->
         <div class="row">
-            <div class="col-sm-4">
-                <div class="card">
-                    <h4 class="card-header">Cadastro paciente/idoso</h4>
-                    <div class="card-body" >
-                        <p class="card-text">Clique no botão abaixo para acessar a página de cadastro paciente</p>
-                        <a href="cadastropaciente.php" class="btn btn-primary">Cadastro paciente</a>
-                        <a href="listagem-paciente.php" class="btn btn-primary">Editar/Excluir paciente</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-4">
-                <div class="card">
-                    <h4 class="card-header">Cadastro funcionário</h4>
-                    <div class="card-body">
-                        <p class="card-text">Clique no botão abaixo para acessar a página de cadastro funcionário</p>
-                        <a href="cadastrofuncionario.php" class="btn btn-primary">Cadastro funcionário</a>
-                        <a href="listagem-funcionario.php" class="btn btn-primary">Editar/Excluir funcionário</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-4">
-                <div class="card">
-                    <h4 class="card-header">Cadastro cliente</h4>
-                    <div class="card-body">
-                        <p class="card-text">Clique no botão abaixo para acessar a página de cadastro cliente</p>
-                        <a href="cadastrocliente.php" class="btn btn-primary">Cadastro cliente</a>
-                        <a href="listagem-cliente.php" class="btn btn-primary">Editar/excluir cliente</a>
-                    </div>
-                </div>
-            </div>
+        <a href="cadastrocliente.php">Cadastrar</a>
+ <p class=espaco></p>
+ <table border=1 cellpading=10>
+<table>
+    <tr class=titulo>
+        <td><h5>Nome Completo</h5></td>
+        <td><h5>Data de Nascimento</h5></td>
+        <td><h5>Endereço</h5></td>
+        <td><h5>Estado</h5></td>
+        <td><h5>Cidade</h5></td>
+        <td><h5>RG</h5></td>
+        <td><h5>CPF</h5></td>
+        <td><h5>Num Celular</h5></td>
+        <td><h5>Telefone Fixo</h5></td>
+        <td><h5>Nome do idoso</h5></td>
+        <td><h5>Parentesco</h5></td>
+        <td><h5>Email</h5></td>
+        <td><h5>Senha</h5></td>
+    </tr>
+    <?php
+    do{
+    ?>
+    <tr>
+        <td><?php echo $linha['nome_cliente']; ?></td>
+        <td><?php echo $linha['data_nascimento']; ?></td>
+        <td><?php echo $linha['endereco']; ?></td>
+        <td><?php echo $linha['estado']; ?></td>
+        <td><?php echo $linha['cidade']; ?></td>
+        <td><?php echo $linha['rg']; ?></td>
+        <td><?php echo $linha['cpf']; ?></td>
+        <td><?php echo $linha['num_celu']; ?></td>
+        <td><?php echo $linha['tel_fixo']; ?></td>
+        <td><?php echo $linha['nome_paciente']; ?></td>
+        <td><?php echo $linha['parentesco']; ?></td>
+        <td><?php echo $linha['email']; ?></td>
+        <td><?php echo $linha['senha']; ?></td>
+        <td>
+            <a href="editar-cliente.php?id=<?php echo $linha['id']; ?>">Editar </a>
+            <a href="javascript: if(confirm('Tem certeza que deseja deletar o usuário <?php echo $linha['nome_completo']; ?>'))
+            location.href='deletar-cliente.php?id=<?php echo $linha['id']; ?>';">Deletar </a>
+        </td>
+    </tr>
+    
+    <?php } while($linha = $sql_query->fetch_assoc()); ?>
+
+
+
+</table>
         </div>
         <!--end page content-->
 
@@ -173,3 +198,13 @@
 </body>
 
 </html>
+
+
+
+
+
+
+
+
+
+ 

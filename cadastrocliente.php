@@ -1,3 +1,104 @@
+<?php
+
+    include("php/conexao.php");
+
+    if(isset($_POST['confirmar'])){
+
+        // 1 - Registro dos dados
+
+        if(!isset($_SESSION))
+            session_start();
+
+            foreach ($_POST as $chave => $valor) {
+                $_SESSION[$chave] = $mysqli->real_escape_string($valor);
+            }
+
+
+        // 2 - Validação de dados
+        
+        if(strlen($_SESSION['nome_cliente']) == 0)
+            $erro[] = "Preencha o nome";
+
+        if(strlen($_SESSION['data_nascimento']) == 0)
+            $erro[] = "Preencha a data de nascimento";
+        
+        if(strlen($_SESSION['endereco']) == 0)
+            $erro[] = "Preencha o seu endereço";
+
+        if(strlen($_SESSION['estado']) == 0)
+            $erro[] = "Preencha o seu estado"; 
+        
+        if(strlen($_SESSION['cidade']) == 0)
+            $erro[] = "Preencha a sua cidade";    
+
+        if(strlen($_SESSION['cpf']) == 0)
+            $erro[] = "Preencha o cpf corretamente"; 
+        
+        if(strlen($_SESSION['rg']) == 0)
+            $erro[] = "Preencha o seu rg corretamente";  
+
+        if(strlen($_SESSION['num_celu']) == 0)
+            $erro[] = "Preencha com seu numero"; 
+        
+        if(substr_count($_SESSION['email'], '@') !=1 || substr_count($_SESSION['email'], '.') <1 || substr_count($_SESSION['email'], '.') >2)
+            $erro[] = "Preencha o email corretamente";   
+    
+        if(strlen($_SESSION['senha']) == 0)
+            $erro[] = "Preencha a senha corretamente";
+
+        // 3 - Inserção no banco de dados e redicionamento
+        if(count($erro) == 0){
+
+
+            $sql_code = "INSERT INTO CLIENTE (
+                nome_cliente,
+                data_nascimento,
+                endereco,
+                estado,
+                cidade,
+                rg,
+                cpf,
+                num_celu,
+                tel_fixo,
+                email,
+                senha)
+                VALUES(
+                '$_SESSION[nome_cliente]',
+                '$_SESSION[data_nascimento]',
+                '$_SESSION[endereco]',
+                '$_SESSION[estado]',
+                '$_SESSION[cidade]',
+                '$_SESSION[rg]',
+                '$_SESSION[cpf]',
+                '$_SESSION[num_celu]',
+                '$_SESSION[tel_fixo]',
+                '$_SESSION[email]',
+                '$_SESSION[senha]'
+                )";
+
+            $confirma = $mysqli ->query($sql_code) or die($mysqli->error);
+            
+            if($confirma){
+                unset($_SESSION[nome_cliente],
+                $_SESSION[data_nascimento],
+                $_SESSION[endereco],
+                $_SESSION[estado],
+                $_SESSION[cidade],
+                $_SESSION[rg],
+                $_SESSION[cpf],
+                $_SESSION[num_celu],
+                $_SESSION[tel_fixo],
+                $_SESSION[email],
+                $_SESSION[senha]);
+
+                echo "<script> location.href='listagem-cliente.php';</script>";
+
+            }else
+                $erro[]=$confirma;
+
+        }    
+    }
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -90,65 +191,84 @@
         </div>
         <!--page header end-->
 
+        <!-- page body start -->
         <div class="panel panel-default">
-            <form style="margin: 1%;">
-                <div class="form-row">
-                    <div class="col-md-6 mb-3">
-                        <label for="validationDefault03">Nome Completo</label>
-                        <input type="text" class="form-control" id="validationDefault03" required>
-                    </div>
-                    <div class="col-md-6 mb-1">
-                        <label for="validationDefault04">ID</label>
-                        <input type="text" class="form-control" id="validationDefault05" disabled>
-                    </div>
-                </div>
+
+        <?php
+            if(count($erro) > 0){
+                echo "<div class='erro'>";
+                foreach($erro as $valor)
+                    echo "$valor <br>";
+
+                echo"</div>";
+            }
 
 
+        ?>
+
+            <form style="margin: 1%;" action="cadastrocliente.php" method="POST">
                 <div class="form-row">
+                    <!-- informações sobre cliente start -->
                     <div class="col-md-6 mb-3">
-                        <label for="validationDefault03">Endereço</label>
-                        <input type="text" class="form-control" id="validationDefault03" required>
+                        <label for="nome_cliente">Nome Completo</label>
+                        <input type="text" class="form-control" id="nome_cliente" name="nome_cliente" required>
                     </div>
                     <div class="col-md-3 mb-1">
-                        <label for="validationDefault04">Estado</label>
-                        <input type="text" class="form-control" id="validationDefault05" required>
+                        <label for="id">ID</label>
+                        <input type="text" class="form-control" id="id_cliente" name="id_cliente" disabled>
                     </div>
                     <div class="col-md-3 mb-3">
-                        <label for="validationDefault05">Cidade</label>
-                        <input type="text" class="form-control" id="validationDefault05" required>
+                        <label for="data_nascimento">Data de Nascimento</label>
+                        <input type="date" class="form-control" id="data_nascimento" name="data_nascimento" require>
+                    </div>
+                </div>
+
+
+                <div class="form-row">
+                    <div class="col-md-6 mb-3">
+                        <label for="endereco">Endereço</label>
+                        <input type="text" class="form-control" id="endereco" name="endereco" required>
+                    </div>
+                    <div class="col-md-3 mb-1">
+                        <label for="estado">Estado</label>
+                        <input type="text" class="form-control" id="estado" name="estado" required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="cidade">Cidade</label>
+                        <input type="text" class="form-control" id="cidade" name="cidade" required>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group col-md-6">
-                        <label for="inputEmail4">RG</label>
-                        <input type="email" class="form-control" id="inputEmail4" required>
+                        <label for="rg">RG</label>
+                        <input type="text" class="form-control" id="rg" name="rg" required>
                     </div>
                     <div class="form-group col-md-6">
-                        <label for="inputPassword4">CPF</label>
-                        <input type="password" class="form-control" id="inputPassword4" required>
+                        <label for="cpf">CPF</label>
+                        <input type="number" class="form-control" id="cpf" name="cpf" required>
                     </div>
                 </div>
 
-                <!--informações do funcionario end-->
+                
 
                 <div class="form-row">
                     <div class="col-md-3 mb-3">
                         <label for="validationDefault03">Numero de Celular</label>
-                        <input type="text" class="form-control" id="validationDefault03" required>
+                        <input type="number" class="form-control" id="num_celu" name="num_celu" required>
                     </div>
                     <div class="col-md-3 mb-1">
                         <label for="validationDefault04">Telefone Fixo</label>
-                        <input type="text" class="form-control" id="validationDefault05">
+                        <input type="number" class="form-control" id="tel_fixo" name="tel_fixo">
                     </div>
                     <div class="col-md-3 mb-3">
                         <label for="validationDefault05">Nome do paciente internado</label>
-                        <input type="text" class="form-control" id="validationDefault05" required>
+                        <input type="text" class="form-control" id="nome_paciente" name="nome_paciente">
                     </div>
 
                     <div class="col-md-3 mb-3">
                         <label for="validationDefault05">ID do paciente internado</label>
-                        <input type="text" class="form-control" id="validationDefault05" required>
+                        <input type="text" class="form-control" id="id_paciente" name="id_paciente" >
                     </div>
                 </div>
 
@@ -156,22 +276,22 @@
 
                     <div class="form-group col-md-4">
                         <label for="inputEmail4">Parentesco</label>
-                        <input type="email" class="form-control" id="inputEmail4">
+                        <input type="text" class="form-control" id="parentesco" name="parentesco">
                     </div>
                     <div class="form-group col-md-4">
                         <label for="inputEmail4">Email</label>
-                        <input type="email" class="form-control" id="inputEmail4">
+                        <input type="email" class="form-control" id="email" name="email">
                     </div>
                     <div class="form-group col-md-4">
                         <label for="inputPassword4">Senha</label>
-                        <input type="password" class="form-control" id="inputPassword4">
+                        <input type="password" class="form-control" id="senha" name="senha">
                     </div>
-
+                    <!--informações do cliente end-->
                 </div>
 
                 <div class="form-row">
                     <div align="right">
-                        <button type="submit" class="btn  btn-primary">Registrar</button>
+                        <button type="submit" class="btn  btn-primary" name="confirmar" id=>Registrar</button>
                     </div>
                 </div>
             </form>

@@ -1,8 +1,73 @@
 <?php
 
+    include("php/conexao.php");
+
+    //$sql_code = "SELECT * FROM CLIENTE";
+    //$sql_query = $mysqli->query($sql_code) or die($mysqli->error);
+    //$linha = $sql_query->fetch_assoc();
     
 
+        //1- Registro dos dados
+      if(isset($_POST['confirmar'])){
+            session_start();
 
+            foreach ($_POST as $chave=>$valor){
+                $_SESSION[$chave] = $mysqli->real_escape_string($valor);
+            }
+
+            // 2 - Validação dos dados
+            if(strlen($_SESSION['nome_paciente'])== 0 )
+                $erro[] = "Prencha o nome do paciente";
+
+            if(strlen($_SESSION['data_nascimento']) == 0)
+                $erro[] = "Preencha a data de nasciento";
+
+            if(strlen($_SESSION['cidade']) == 0)
+                $erro[] = "Preencha a cidade";
+
+            if(strlen($_SESSION['rg']) == 0)
+                $erro[] = "Preencha a rg";
+                
+            if(strlen($_SESSION['cpf']) == 0)
+                $erro[] = "Preencha a cpf";
+
+
+            // 3 Inserção no banco de dados
+            if(count($erro) == 0){
+
+                $sql_code = "INSERT INTO PACIENTE(
+                    nome_paciente,
+                    data_nascimento,
+                    endereco,
+                    cidade,
+                    rg,
+                    cpf)
+                    VALUES(
+                    '$_SESSION[nome_paciente]',
+                    '$_SESSION[data_nascimento]',
+                    '$_SESSION[endereco]',
+                    '$_SESSION[cidade]',
+                    '$_SESSION[rg]',
+                    '$_SESSION[cpf]'
+                    )";
+
+            $confirma = $mysqli->query($sql_code) or die($mysqli->error);
+            
+            if($confirma){
+                unset($_SESSION[nome_completo],
+                $_SESSION[data_nascimento],
+                $_SESSION[endereco],
+                $_SESSION[cidade],
+                $_SESSION[rg],
+                $_SESSION[cpf]);
+
+                echo "<script>location.href=cadastropaciente2.php?id_cliente</script>";
+            
+            }else
+                $erro[] =$confirma;
+
+        }
+      }      
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -107,240 +172,55 @@
         <!--start page content-->
         <div class="row">
             <div class="panel panel-default">
-                <form style="margin: 1%;">
+                <form style="margin: 1%;" method="POST" action="cadastropaciente2.php">
                     <div class="form-row">
                         <div class="col-md-6 mb-3">
-                            <label for="validationDefault03">Nome Completo</label>
-                            <input type="text" class="form-control" id="validationDefault03" required>
+                            <label >Nome Completo</label>
+                            <input type="text" class="form-control" name="nome_paciente" value="<?php echo $_SESSION[nome_paciente]; ?>" required>
                         </div>
                         <div class="col-md-3 mb-1">
-                            <label for="validationDefault04">ID</label>
-                            <input type="text" class="form-control" id="validationDefault05" required>
+                            <label >ID</label>
+                            <input type="text" class="form-control" disabled>
                         </div>
                         <div class="col-md-3 mb-3">
-                            <label for="validationDefault05">Data de nascimento</label>
-                            <input type="text" class="form-control" id="validationDefault05" required>
+                            <label >Data de nascimento</label>
+                            <input type="date" class="form-control" name="data_nascimento" value="<?php echo $_SESSION[data_nascimento]; ?>" required>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="col-md-6 mb-3">
-                            <label for="validationDefault03">Endereço</label>
-                            <input type="text" class="form-control" id="validationDefault03" required>
+                            <label >Endereço</label>
+                            <input type="text" class="form-control" name="endereco" value="<?php echo $_SESSION[endereco]; ?>">
                         </div>
                         <div class="col-md-3 mb-1">
-                            <label for="validationDefault04">Estado</label>
-                            <input type="text" class="form-control" id="validationDefault05" required>
+                            <label >Estado</label>
+                            <input type="text" class="form-control" name="estado" value="<?php echo $_SESSION[estado]; ?>" required>
                         </div>
                         <div class="col-md-3 mb-3">
-                            <label for="validationDefault05">Cidade</label>
-                            <input type="text" class="form-control" id="validationDefault05" required>
+                            <label ">Cidade</label>
+                            <input type="text" class="form-control" name="cidade" value="<?php echo $_SESSION[cidade]; ?>" required>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group col-md-6">
-                            <label for="inputEmail4">RG</label>
-                            <input type="email" class="form-control" id="inputEmail4">
+                            <label >RG</label>
+                            <input type="text" class="form-control" name="rg" value="<?php echo $_SESSION[rg]; ?>" required>
                         </div>
                         <div class="form-group col-md-6">
-                            <label for="inputPassword4">CPF</label>
-                            <input type="password" class="form-control" id="inputPassword4">
+                            <label >CPF</label>
+                            <input type="text" class="form-control" name="cpf" value="<?php echo $_SESSION[cpf]; ?>" required>
                         </div>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="inputEmail4">Nome do lar</label>
-                            <input type="text" class="form-control" id="inputEmail4">
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="inputPassword4">Id do lar</label>
-                            <input type="password" class="form-control" id="inputPassword4">
-                        </div>
+                    
+                    <div align="right" style="margin: 2%;">
+                        <input type="submit" name="confirmar" value="Salvar"   href="cadastropaciente2.php?id_cliente=<?php echo $_SESSION['id_cliente']; ?>">
                     </div>
-
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Código</th>
-                                        <th scope="col">Nome</th>
-                                        <th scope="col">Parentesco</th>
-                                        <th scope="col">Principal</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <th scope="row">10000</th>
-                                        <td>Mark da Silva Vieira</td>
-                                        <td>Filho</td>
-                                        <td><input type="checkbox" class="form-check-input" id="exampleCheck1"></td>
-
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">2000</th>
-                                        <td>Jacob Peralta</td>
-                                        <td>Sobrinho</td>
-                                        <td><input type="checkbox" class="form-check-input" id="exampleCheck1"></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">30000</th>
-                                        <td>Larry the Bird</td>
-                                        <td>Neta</td>
-                                        <td><input type="checkbox" class="form-check-input" id="exampleCheck1"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <input class="btn btn-primary" type="submit" value="Excluir">
-
-                        </div>
-
-                        <div class="col-md-3 mb-1">
-                            <p>Responsavel</p>
-                            <select name="account" required class="form-control m-bv required">
-                                                    <option><font style="vertical-align: inherit;"></font></option>
-                                                    <option><font style="vertical-align: inherit;">Paciente 1</font></option>
-                                                    <option><font style="vertical-align: inherit;">Paciente 2</font></option>
-                                                    <option><font style="vertical-align: inherit;">Paciente 3</font></option>
-                                                    <option><font style="vertical-align: inherit;">Paciente 4</font></option>
-                                                </select>
-                            <p>(*) Obrigatório</p>
-                            <input class="btn btn-primary" type="submit" value="Pesquisar">
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <p>Grau de Parentesco</p>
-                            <select name="account" required class="form-control m-bv required">
-                                                    <option><font style="vertical-align: inherit;"></font></option>
-                                                    <option><font style="vertical-align: inherit;">Filho</font></option>
-                                                    <option><font style="vertical-align: inherit;">Filha</font></option>
-                                                    <option><font style="vertical-align: inherit;">Sobrinho(a)</font></option>
-                                                    <option><font style="vertical-align: inherit;">Outros</font></option>
-                                                </select>
-                            <p>(*) Obrigatório</p>
-                            <input class="btn btn-primary" type="submit" value="Adicionar">
-                        </div>
-                    </div>
-                </form>
-
-                <div class="row">
-                    <form>
-                        <div class="col-md-12">
-                            <div class="col-md-3 mb-1">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">#</th>
-                                            <th scope="col">Enfermidade</th>
-
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><input type="checkbox" class="form-check-input" id="exampleCheck1"></td>
-                                            <td>Diabetes</td>
-                                        </tr>
-                                        <tr>
-                                            <td><input type="checkbox" class="form-check-input" id="exampleCheck1"></td>
-                                            <td>Hipertensão</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-
-                                <select class="form-control" id="exampleFormControlSelect1">
-                                                    <option>1</option>
-                                                    <option>2</option>
-                                                    <option>3</option>
-                                                    <option>4</option>
-                                                    <option>5</option>
-                                                    </select>
-                                <br>
-                                <button type="button" class="btn btn-primary">Adicionar</button>
-                                <button type="button" class="btn btn-primary">Excluir</button>
-                            </div>
-
-                            <div class="col-md-3 mb-1">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">#</th>
-                                            <th scope="col">Restrição Alimentar</th>
-
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><input type="checkbox" class="form-check-input" id="exampleCheck1"></td>
-                                            <td>Amendoin</td>
-                                        </tr>
-                                        <tr>
-                                            <td><input type="checkbox" class="form-check-input" id="exampleCheck1"></td>
-                                            <td>Frutos do mar</td>
-                                        </tr>
-
-                                    </tbody>
-                                </table>
-                                <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="nome@exemplo.com">
-                                <br>
-                                <button type="button" class="btn btn-primary">Adicionar</button>
-                                <button type="button" class="btn btn-primary">Excluir</button>
-
-                            </div>
-                            <div class="col-md-6 mb-1">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">#</th>
-                                            <th scope="col">Medicação</th>
-                                            <th scope="col">Dose</th>
-                                            <th scope="col">Intervalo</th>
-                                            <th scope="col">Observação</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><input type="checkbox" class="form-check-input" id="exampleCheck1"></td>
-                                            <td>Aradois 50mg</td>
-                                            <td>1 comprimido</td>
-                                            <td>12 horas</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td><input type="checkbox" class="form-check-input" id="exampleCheck1"></td>
-                                            <td>Acetilcisteina 600mg</td>
-                                            <td>1 envelope</td>
-                                            <td>24 horas</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td><input type="checkbox" class="form-check-input" id="exampleCheck1"></td>
-                                            <td>Anlodipino 5mg</td>
-                                            <td>1 comprimido</td>
-                                            <td>24 horas</td>
-                                            <td>Noite</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td> <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="Medicação"></td>
-                                            <td> <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="Dose"></td>
-                                            <td> <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="Intervalo"></td>
-                                            <td> <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="Observação"></td>
-
-                                        </tr>
-                                        <tr>
-                                            <td><button type="button" class="btn btn-primary">Adicionar</button></td>
-                                            <td><button type="button" class="btn btn-primary">Excluir</button></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-
-                                <br>
-                            </div>
-                        </div>
-                </div>
-                </form>
+                
+             </form>
+        
             </div>
         </div>
 

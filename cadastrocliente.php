@@ -258,7 +258,7 @@
                         <input type="number" class="form-control" id="num_celu" name="num_celu" required>
                     </div>
                     <div class="col-md-3 mb-1">
-                        <label for="validationDefault04">Telefone Fixo</label>
+                        <label >Telefone Fixo</label>
                         <input type="number" class="form-control" id="tel_fixo" name="tel_fixo">
                     </div>
                     <div class="col-md-3 mb-3">

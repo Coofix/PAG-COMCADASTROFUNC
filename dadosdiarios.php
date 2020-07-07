@@ -1,3 +1,14 @@
+<?php
+
+include("php/conexao.php");
+
+    $sql_code = "SELECT * FROM PACIENTE";
+    $sql_query = $mysqli->query($sql_code) or die($mysqli->error);
+    $linha = $sql_query->fetch_assoc();
+
+
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -106,12 +117,15 @@
                                 <section>
                                     <label for="userName">*Seleicione o paciente que você quer adicionar informações na ficha diaria do pacinete</label>
 
-                                    <select name="account" required class="form-control m-bv required">
+                                    <select name="id_paciente" required class="form-control m-bv required">
                                             <option><font style="vertical-align: inherit;"></font></option>
-                                            <option><font style="vertical-align: inherit;">Paciente 1</font></option>
-                                            <option><font style="vertical-align: inherit;">Paciente 2</font></option>
-                                            <option><font style="vertical-align: inherit;">Paciente 3</font></option>
-                                            <option><font style="vertical-align: inherit;">Paciente 4</font></option>
+                                            <?php
+
+                                                 do{
+                                                 ?>
+
+                                                <option value="<?php echo $linha['id_paciente']?>" name="id_paciente"><?php echo $linha['nome_paciente']; ?></option>        
+                                            <?php } while($linha = $sql_query->fetch_assoc());?>
                                         </select>
                                     <p>(*) Obrigatório</p>
                                 </section>

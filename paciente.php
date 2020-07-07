@@ -2,6 +2,14 @@
 
     include("php/conexao.php");
 
+    $sql_code = "SELECT * FROM CLIENTE WHERE (id_paciente is null)";
+    $sql_query = $mysqli->query($sql_code) or die($mysqli->error);
+    $linha = $sql_query->fetch_assoc();
+
+
+    
+    
+
     //1- Registro dos dados do cliente
     if(isset($_POST['incluir_paciente'])){
         session_start();
@@ -36,6 +44,10 @@
         // 3 Inserção no banco de dados
         if(count($erro) == 0){
 
+          //  $sql_code = "SELECT nome_cliente FROM CLIENTE WHERE 'id_cliente' = '$_SESSION[id_cliente]'";
+           // $sql_query = $mysqli->query($sql_code) or die($mysqli->error);
+           // $nome_cliente = $sql_query->fetch_assoc($sql_code);
+
             $sql_code = "INSERT INTO PACIENTE (
                 id_paciente,
                 nome_paciente,
@@ -44,7 +56,9 @@
                 estado,
                 cidade,
                 rg,
-                cpf)
+                cpf,
+                id_cliente,
+                parentesco)
                 VALUES(
                  id_paciente,
                 '$_SESSION[nome_paciente]',
@@ -53,11 +67,37 @@
                 '$_SESSION[estado]',
                 '$_SESSION[cidade]',
                 '$_SESSION[rg]',
-                '$_SESSION[cpf]')";
+                '$_SESSION[cpf]',
+                '$_SESSION[id_cliente]',
+                '$_SESSION[parentesco]');
+                
+                
+                UPDATE CLIENTE SET
+                 nome_paciente = '$_SESSION[nome_paciente]',
+                 id_paciente = id_paciente,
+                 parentesco = '$_SESSION[parentesco]'
+                 WHERE id_cliente = '$_SESSION[id_cliente]';";
 
+                    //$sql_code = "SELECT AUTO_INCREMENT FROM information_schema.tables
+                   // WHERE 'PACIENTE' = 'id_paciente' AND table_schema = 'oldlove'  ;";
+                    //$sql_query = $mysqli->query($sql_code) or die($mysqli->error);
+                   // $paciente_id = $sql_query;
+                  //  $paciente_id = $paciente_id -1;
+
+                $sql_code = "
+                ";
+
+            
+
+            //$sql_code = "SELECT max(id_paciente) as id_paciente FROM PACIENTE";
+            //$paciente_id = $sql_code;
+            
+           // unset($sql_code);
+             
+             //$sql_code = "";
 
         $confirma = $mysqli->query($sql_code) or die($mysqli->error);
-        echo "<script> location.href='cadastropaciente2.php?nome_paciente=$_SESSION[nome_paciente]';</script>";
+        
         if(!$confirma){
             $erro[] =$confirma;
         
@@ -68,6 +108,56 @@
 
     }
   } 
+
+
+    
+    
+    if(isset($_POST['incluir_restricao'])){
+        
+        
+
+        foreach ($_POST as $chave=>$valor){
+            $_SESSION[$chave] = $mysqli->real_escape_string($valor);
+        }
+
+        // 2 - Validação dos dados
+        if(strlen($_SESSION['id_cliente'])== 0 )
+           $erro[] = "Escolha o resposavel";
+
+        if(strlen($_SESSION['parentesco']) == 0)
+            $erro[] = "Preencha o parentesco";
+
+
+        // 3 Inserção no banco de dados
+        if(count($erro) == 0){
+
+            
+
+            $sql_code = "UPDATE PACIENTE SET
+                id_cliente = '$_SESSION[id_cliente]',
+               nome_cliente = '$nome_cliente',
+                parentesco = '$_SESSION[parentesco]'
+               WHERE id_paciente =  '$paciente_id'";
+
+            $sql_code = "UPDATE CLIENTE SET
+                id_paciente = $_SESSION[id_paciente],
+                nome_paciente = $_SESSION[nome_paciente],
+                parentesco = $_SESSION[parentesco]
+                WHERE id_cliente =  '$_SESSION[id_cliente]'";
+
+        $confirma = $mysqli->query($sql_code) or die($mysqli->error);
+        
+        if(!$confirma){
+            $erro[] =$confirma;
+        
+        }else{
+            echo "LINCADOS COM SUCESSO";
+        }
+            
+
+    }
+  } 
+
 
 ?>
 <!DOCTYPE html>
@@ -227,8 +317,7 @@
 
                     
                     <div align="right" style="margin: 2%;">
-                        <input type="submit" name="incluir_paciente" value="Salvar" href="'cadastropaciente2.php?nome_paciente=<?php echo $_SESSION['nome_paciente']; ?>';">
-                        <input type="submit"   value="Incluir Infor">
+                        <input type="submit" name="incluir_paciente" value="Salvar">
                     </div>
                 
 
@@ -236,7 +325,7 @@
                                     <!-- INFORMATION PACIENT STARTS -->
 
                
-            <!--    
+                
                     <div class="form-group col-md-6">
                             <table class="table table-hover">
                                 <thead >
@@ -269,14 +358,14 @@
                                                     <option><font style="vertical-align: inherit;"></font></option>
                                                     <?php
 
-                                               //         do{
-                                                //            ?>
+                                                        do{
+                                                            ?>
 
                                                     <option value="<?php echo $linha['id_cliente']?>" name="id_cliente"><?php echo $linha['nome_cliente']; ?></option> 
                                                                
 
                                                         
-                                                    <?php //} while($linha = $sql_query->fetch_assoc());?>
+                                                    <?php } while($linha = $sql_query->fetch_assoc());?>
                                                 </select>
                                                         
                             <p>(*) Obrigatório</p>
@@ -410,7 +499,6 @@
                         </div>
                 </div>
             </form>
-                                               -->
         </div>
     </div>
 

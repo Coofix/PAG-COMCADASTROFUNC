@@ -2,12 +2,103 @@
 
     include("php/conexao.php");
 
-    $sql_code = "SELECT * FROM CLIENTE";
+    $nome_paciente = $_GET['nome_paciente'];
+
+    $sql_code = "SELECT * FROM CLIENTE WHERE (id_paciente is null)";
     $sql_query = $mysqli->query($sql_code) or die($mysqli->error);
     $linha = $sql_query->fetch_assoc();
+
+
+    $sql_code_clie = "SELECT * FROM PACIENTE WHERE (parentesco is null)";
+    $sql_query_clie = $mysqli->query($sql_code_clie) or die($mysqli->error);
+    $cliente = $sql_query_clie->fetch_assoc();
+
     
+
+    //1- Registro dos dados do cliente
+    if(isset($_POST['incluir_paciente'])){
+        session_start();
+
+        $id_paciente = $_SESSION[id_paciente];
+        foreach ($_POST as $chave=>$valor){
+            $_SESSION[$chave] = $mysqli->real_escape_string($valor);
+        }
+
+        // 2 - Validação dos dados
+        if(strlen($_SESSION['id_paciente'])== 0 )
+            $erro[] = "Prencha o nome do paciente";
+
+        if(strlen($_SESSION['id_cliente']) == 0)
+            $erro[] = "Prencha o nome do cliente";
+
+        // 3 Inserção no banco de dados
+        if(count($erro) == 0){
+
+                $sql_code = "UPDATE CLIENTE SET
+                 nome_paciente = '$nome_paciente',
+                 id_paciente = $_SESSION[id_paciente],
+                 parentesco = '$_SESSION[parentesco]'
+                 WHERE id_cliente = '$_SESSION[id_cliente]';
+                ";
+                $sql_query = $mysqli->query($sql_code) or die($mysqli->error);
+                
+
+
+                $sql_code_ = "SELECT nome_cliente FROM CLIENTE WHERE id_cliente = '$_SESSION[id_cliente]'";
+                $sql_query = $mysqli->query($sql_code) or die($mysqli->error);
+                $nome_cliente = $sql_query;
+                
+
+                $sql_code_cl = "UPDATE PACIENTE SET
+                    nome_cliente = '$nome_cliente',
+                    id_cliente = $_SESSION[id_cliente],
+                    parentesco = '$_SESSION[parentesco]'
+                    WHERE id_paciente = '$_SESSION[id_paciente]';
+                ";
+                $sql_query = $mysqli->query($sql_code_cl) or die($mysqli->error);
+
+             echo "<script> location.href='cadastropaciente3.php?id_paciente=$_SESSION[id_paciente]';</script>";   
+    }
+  } 
+
+    $id_paciente = $_SESSION[id_paciente];
+    
+    
+    
+    if(isset($_POST['incluir_restricao'])){
+        
+        
+
+        foreach ($_POST as $chave=>$valor){
+            $_SESSION[$chave] = $mysqli->real_escape_string($valor);
+        }
+
+        // 2 - Validação dos dados
+        if(strlen($_SESSION['nome_restricao'])== 0 )
+           $erro[] = "Digite a enfermidade";
+
+        // 3 Inserção no banco de dados
+        if(count($erro) == 0){
+
             
-    
+            $sql_code = "INSERT INTO RESTRICAO_PACIENTE(
+                id_restricao,
+                nome_restricao,
+                id_paciente)
+                VALUES(
+                 id_restricao,
+                '$_SESSION[nome_restricao]',
+                '$id_paciente')";
+
+           
+
+        $confirma = $mysqli->query($sql_code) or die($mysqli->error);
+        
+        
+            
+
+    }
+  } 
 
 
 ?>
@@ -85,7 +176,7 @@
             <div class="nano-content">
                 <ul class="metisMenu nav" id="menu">
                     <li class="nav-heading"><span></span></li>
-                    <li><a href="dadosdiarios.html"><i class="fa fa-user"></i> Dados Diários </a></li>
+                    <li><a href="dadosdiarios.php"><i class="fa fa-user"></i> Dados Diários </a></li>
                     <li><a href="page-calendar.html"><i class="fa fa-calendar"></i> Historico paciente </a></li>
                     <li><a href="gerenciamento.html"><i class="fa fa-server"></i> Gerenciamento </a></li>
                     <li><a href="page-login.html"><i class="fa fa-sign-in"></i> Sair </a></li>
@@ -109,41 +200,36 @@
 
             </div>
         </div>
+        
         <!--page header end-->
 
         <!--start page content-->
         <div class="row">
-            <div class="panel panel-default">
-                <form style="margin: 1%;" method="POST">
-                    
-            <form method="GET" action="cadastropaciente.php">
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
+                <form style="margin: 1%;" method="POST" action="cadastropaciente2.php">  
+                        <div class="form-row form-group col-md-6">     
                             <table class="table table-hover">
                                 <thead >
                                     <tr>
                                         <th scope="col">Código</th>
                                         <th scope="col">Nome</th>
                                         <th scope="col">Parentesco</th>
-                                        <th scope="col">Principal</th>
+                                        
                                     </tr>
                                 </thead>
                                 <tbody >
                                     
-                                    
-                                        
                                     <tr>
-                                       <td><?php echo $cliente['id_cliente'];?></td> 
-                                       <td><?php echo $cliente['nome_cliente'];?></td> 
-                                       
+                                       <td><?php echo $_SESSION['id_cliente'];?></td> 
+                                       <td><?php echo $nome_cliente;?></td> 
+                                       <td><?php echo $_SESSION['parentesco'];?></td> 
                                     </tr>
                                     
                                 </tbody>
                             </table>
-                            <input class="btn btn-primary" type="submit" value="Excluir">
+                            <input class="btn btn-primary" type="submit"  value="Excluir">
 
                         </div>
-
+                   
                         <div class="col-md-3 mb-1">
                             <p>Responsavel</p>
                             <select name="id_cliente" id="id_cliente" required class="form-control m-bv required">
@@ -153,7 +239,8 @@
                                                         do{
                                                             ?>
 
-                                                    <option value="<?php echo $linha['id_cliente']?>" name="id_cliente"><?php echo $linha['nome_cliente']; ?></option>            
+                                                    <option value="<?php echo $linha['id_cliente']?>" name="id_cliente"><?php echo $linha['nome_cliente']; ?></option> 
+                                                               
 
                                                         
                                                     <?php } while($linha = $sql_query->fetch_assoc());?>
@@ -162,6 +249,27 @@
                             <p>(*) Obrigatório</p>
                             
                         </div>
+                         
+                        <div class="col-md-3 mb-1">
+                            <p>Selecione o paciente</p>
+                            <select name="id_paciente" id="id_paciente" required class="form-control m-bv required">
+                                                    <option><font style="vertical-align: inherit;"></font></option>
+                                                    <?php
+
+                                                        do{
+                                                            ?>
+
+                                                    <option value="<?php echo $cliente['id_paciente']?>" name="id_paciente"><?php echo $cliente['nome_paciente']; ?></option> 
+                                                               
+
+                                                        
+                                                    <?php } while($cliente = $sql_query_clie->fetch_assoc());?>
+                                                </select>
+                                                        
+                            <p>(*) Obrigatório</p>
+                            
+                        </div>
+
                         <div class="col-md-3 mb-3">
                             <p>Grau de Parentesco</p>
                             <select name="parentesco" required class="form-control m-bv required" id="parentesco">
@@ -172,124 +280,20 @@
                                                     <option><font style="vertical-align: inherit;" value="outros">Outros</font></option>
                                                 </select>
                             <p>(*) Obrigatório</p>
-                            <input class="btn btn-primary add"  type="submit" value="Adicionar" name="adicionar_cliente">
+                           
                         </div>
-                    </div>
+                        <input type="submit" name="incluir_paciente" value="Salvar" >
+                    
                 </form>
 
-                <div class="row">
-                    <form>
-                        <div class="col-md-12">
-                            <div class="col-md-3 mb-1">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">#</th>
-                                            <th scope="col">Enfermidade</th>
-
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><input type="checkbox" class="form-check-input" id="exampleCheck1"></td>
-                                            <td>Diabetes</td>
-                                        </tr>
-                                        <tr>
-                                            <td><input type="checkbox" class="form-check-input" id="exampleCheck1"></td>
-                                            <td>Hipertensão</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-
-                                <select class="form-control" id="exampleFormControlSelect1">
-                                                    <option>1</option>
-                                                    <option>2</option>
-                                                    <option>3</option>
-                                                    <option>4</option>
-                                                    <option>5</option>
-                                                    </select>
-                                <br>
-                                <button type="button" class="btn btn-primary">Adicionar</button>
-                                <button type="button" class="btn btn-primary">Excluir</button>
+                
+        
                             </div>
-
-                            <div class="col-md-3 mb-1">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">#</th>
-                                            <th scope="col">Restrição Alimentar</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr id="listRestricao">
-                                           
-                                        <tr>
-                                    </tbody>
-                                </table>
-                                <input type="text" class="form-control" id="nomeRestricao" placeholder="nome@exemplo.com">
-                                <br>
-                                <button type="button" onclick="restricaoAlimentar()" class="btn btn-primary">Adicionar</button>
-                                <button type="button" class="btn btn-primary">Excluir</button>
-
-                                
-                            </div>
-                            <div class="col-md-6 mb-1">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">#</th>
-                                            <th scope="col">Medicação</th>
-                                            <th scope="col">Dose</th>
-                                            <th scope="col">Intervalo</th>
-                                            <th scope="col">Observação</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><input type="checkbox" class="form-check-input" id="exampleCheck1"></td>
-                                            <td>Aradois 50mg</td>
-                                            <td>1 comprimido</td>
-                                            <td>12 horas</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td><input type="checkbox" class="form-check-input" id="exampleCheck1"></td>
-                                            <td>Acetilcisteina 600mg</td>
-                                            <td>1 envelope</td>
-                                            <td>24 horas</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td><input type="checkbox" class="form-check-input" id="exampleCheck1"></td>
-                                            <td>Anlodipino 5mg</td>
-                                            <td>1 comprimido</td>
-                                            <td>24 horas</td>
-                                            <td>Noite</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td> <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="Medicação"></td>
-                                            <td> <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="Dose"></td>
-                                            <td> <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="Intervalo"></td>
-                                            <td> <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="Observação"></td>
-
-                                        </tr>
-                                        <tr>
-                                            <td><button type="button" class="btn btn-primary">Adicionar</button></td>
-                                            <td><button type="button" class="btn btn-primary">Excluir</button></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-
-                                <br>
-                            </div>
-                        </div>
-                </div>
-                </form>
-            </div>
+                        
+                
+            
         </div>
+    
 
         <!--Start footer-->
         <footer class="footer">

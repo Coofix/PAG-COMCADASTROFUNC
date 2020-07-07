@@ -173,7 +173,7 @@
             <div class="nano-content">
                 <ul class="metisMenu nav" id="menu">
                     <li class="nav-heading"><span></span></li>
-                    <li><a href="dadosdiarios.html"><i class="fa fa-user"></i> Dados Diários </a></li>
+                    <li><a href="dadosdiarios.php"><i class="fa fa-user"></i> Dados Diários </a></li>
                     <li><a href="page-calendar.html"><i class="fa fa-calendar"></i> Historico paciente </a></li>
                     <li><a href="gerenciamento.html"><i class="fa fa-server"></i> Gerenciamento </a></li>
                     <li><a href="page-login.html"><i class="fa fa-sign-in"></i> Sair </a></li>
